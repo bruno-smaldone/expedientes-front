@@ -1,0 +1,76 @@
+name: Deploy to S3
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Run linter
+      run: npm run lint
+    
+    - name: Build application
+      run: npm run build
+    
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+    
+    - name: Deploy to S3
+      run: |
+        # Upload static assets with long cache
+        aws s3 sync dist/ s3://expedientes-front/ \
+          --delete \
+          --cache-control "public, max-age=31536000" \
+          --exclude "*.html" \
+          --exclude "service-worker.js" \
+          --exclude "manifest.json"
+        
+        # Upload HTML files with short cache (for SPA routing)
+        aws s3 sync dist/ s3://expedientes-front/ \
+          --cache-control "public, max-age=0, must-revalidate" \
+          --include "*.html" \
+          --include "service-worker.js" \
+          --include "manifest.json"
+    
+    - name: Invalidate CloudFront (if exists)
+      run: |
+        if [ -f aws/cloudfront-distribution-id.txt ]; then
+          DISTRIBUTION_ID=$(cat aws/cloudfront-distribution-id.txt)
+          echo "Creating CloudFront invalidation for: $DISTRIBUTION_ID"
+          aws cloudfront create-invalidation \
+            --distribution-id $DISTRIBUTION_ID \
+            --paths "/*"
+        else
+          echo "No CloudFront distribution found, skipping invalidation"
+        fi
+      continue-on-error: true # Don't fail if CloudFront doesn't exist yet
+    
+    - name: Show deployment URLs
+      run: |
+        echo "🚀 Deployment complete!"
+        echo "S3 Website: http://expedientes-front.s3-website-us-east-1.amazonaws.com"
+        if [ -f aws/cloudfront-distribution-id.txt ]; then
+          DISTRIBUTION_ID=$(cat aws/cloudfront-distribution-id.txt)
+          CLOUDFRONT_DOMAIN=$(aws cloudfront get-distribution --id $DISTRIBUTION_ID --query 'Distribution.DomainName' --output text)
+          echo "CloudFront: https://$CLOUDFRONT_DOMAIN"
+        fi

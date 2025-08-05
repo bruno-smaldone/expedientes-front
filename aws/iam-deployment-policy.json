@@ -1,0 +1,238 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:CreateBucket",
+        "s3:ListBucket",
+        "s3:GetBucketLocation",
+        "s3:GetBucketPolicy",
+        "s3:PutBucketPolicy",
+        "s3:DeleteBucket",
+        "s3:PutObject",
+        "s3:GetObject",
+        "s3:DeleteObject",
+        "s3:PutBucketPublicAccessBlock",
+        "s3:GetBucketPublicAccessBlock",
+        "s3:PutEncryptionConfiguration",
+        "s3:GetEncryptionConfiguration",
+        "s3:PutBucketVersioning",
+        "s3:GetBucketVersioning",
+        "s3:PutBucketTagging",
+        "s3:GetBucketTagging",
+        "s3:DeleteBucketPolicy",
+        "s3:PutLifecycleConfiguration",
+        "s3:GetLifecycleConfiguration",
+        "s3:PutBucketWebsite",
+        "s3:GetBucketWebsite",
+        "s3:DeleteBucketWebsite",
+        "s3:PutBucketCORS",
+        "s3:GetBucketCORS"
+      ],
+      "Resource": [
+        "arn:aws:s3:::aws-sam-cli-managed-default-samclisourcebucket-*",
+        "arn:aws:s3:::aws-sam-cli-managed-default-samclisourcebucket-*/*",
+        "arn:aws:s3:::expedientes-sam-deployments-*",
+        "arn:aws:s3:::expedientes-sam-deployments-*/*",
+        "arn:aws:s3:::expedientes-front*",
+        "arn:aws:s3:::expedientes-front*/*"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "lambda:CreateFunction",
+        "lambda:UpdateFunctionCode",
+        "lambda:UpdateFunctionConfiguration",
+        "lambda:GetFunction",
+        "lambda:GetFunctionConfiguration",
+        "lambda:DeleteFunction",
+        "lambda:InvokeFunction",
+        "lambda:AddPermission",
+        "lambda:RemovePermission",
+        "lambda:ListVersionsByFunction",
+        "lambda:GetPolicy",
+        "lambda:PutFunctionConcurrency",
+        "lambda:DeleteFunctionConcurrency",
+        "lambda:PublishVersion",
+        "lambda:CreateAlias",
+        "lambda:GetAlias",
+        "lambda:UpdateAlias",
+        "lambda:DeleteAlias",
+        "lambda:TagResource",
+        "lambda:UntagResource",
+        "lambda:ListTags",
+        "lambda:GetLayerVersion",
+        "lambda:PublishLayerVersion",
+        "lambda:DeleteLayerVersion",
+        "lambda:ListLayerVersions"
+      ],
+      "Resource": "arn:aws:lambda:*:*:function:expedientes-*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "lambda:GetAccountSettings",
+        "lambda:ListFunctions"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iam:CreateRole",
+        "iam:GetRole",
+        "iam:DeleteRole",
+        "iam:PutRolePolicy",
+        "iam:GetRolePolicy",
+        "iam:DeleteRolePolicy",
+        "iam:AttachRolePolicy",
+        "iam:DetachRolePolicy",
+        "iam:PassRole",
+        "iam:TagRole",
+        "iam:UntagRole",
+        "iam:ListRolePolicies",
+        "iam:ListAttachedRolePolicies",
+        "iam:UpdateRole",
+        "iam:UpdateRoleDescription"
+      ],
+      "Resource": [
+        "arn:aws:iam::*:role/expedientes-*"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "cloudformation:CreateStack",
+        "cloudformation:UpdateStack",
+        "cloudformation:DeleteStack",
+        "cloudformation:DescribeStacks",
+        "cloudformation:DescribeStackEvents",
+        "cloudformation:DescribeStackResource",
+        "cloudformation:DescribeStackResources",
+        "cloudformation:GetTemplate",
+        "cloudformation:ListStackResources",
+        "cloudformation:DescribeStackSet",
+        "cloudformation:ListExports",
+        "cloudformation:CreateChangeSet",
+        "cloudformation:DeleteChangeSet",
+        "cloudformation:DescribeChangeSet",
+        "cloudformation:ExecuteChangeSet",
+        "cloudformation:TagResource",
+        "cloudformation:UntagResource",
+        "cloudformation:ListStackSetOperations",
+        "cloudformation:ValidateTemplate",
+        "cloudformation:GetTemplateSummary"
+      ],
+      "Resource": "arn:aws:cloudformation:*:*:stack/expedientes-*/*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "cloudformation:ListStacks",
+        "cloudformation:ValidateTemplate",
+        "cloudformation:GetTemplateSummary"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "cloudformation:CreateChangeSet"
+      ],
+      "Resource": [
+        "arn:aws:cloudformation:*:aws:transform/Serverless-2016-10-31",
+        "arn:aws:cloudformation:*:aws:transform/Include"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "apigateway:GET",
+        "apigateway:POST",
+        "apigateway:PUT",
+        "apigateway:DELETE",
+        "apigateway:PATCH",
+        "apigateway:TagResource"
+      ],
+      "Resource": [
+        "arn:aws:apigateway:*::/restapis",
+        "arn:aws:apigateway:*::/restapis/*",
+        "arn:aws:apigateway:*::/apis",
+        "arn:aws:apigateway:*::/apis/*",
+        "arn:aws:apigateway:*::/tags/*",
+        "arn:aws:apigateway:*::/apikeys",
+        "arn:aws:apigateway:*::/apikeys/*",
+        "arn:aws:apigateway:*::/usageplans",
+        "arn:aws:apigateway:*::/usageplans/*",
+        "arn:aws:apigateway:*::/usageplans/*/keys",
+        "arn:aws:apigateway:*::/usageplans/*/keys/*"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents",
+        "logs:DescribeLogGroups",
+        "logs:DescribeLogStreams",
+        "logs:FilterLogEvents",
+        "logs:DeleteLogGroup",
+        "logs:PutRetentionPolicy",
+        "logs:TagResource"
+      ],
+      "Resource": [
+        "arn:aws:logs:*:*:log-group:/aws/lambda/expedientes-*",
+        "arn:aws:logs:*:*:log-group:/aws/lambda/expedientes-*:*"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ecr:CreateRepository",
+        "ecr:DescribeRepositories",
+        "ecr:GetAuthorizationToken",
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:BatchGetImage",
+        "ecr:PutImage",
+        "ecr:InitiateLayerUpload",
+        "ecr:UploadLayerPart",
+        "ecr:CompleteLayerUpload",
+        "ecr:SetRepositoryPolicy",
+        "ecr:GetRepositoryPolicy",
+        "ecr:DescribeImages",
+        "ecr:ListImages"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:ListAllMyBuckets",
+        "s3:GetBucketLocation"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "cloudfront:CreateDistribution",
+        "cloudfront:GetDistribution",
+        "cloudfront:GetDistributionConfig",
+        "cloudfront:UpdateDistribution",
+        "cloudfront:DeleteDistribution",
+        "cloudfront:CreateInvalidation",
+        "cloudfront:GetInvalidation",
+        "cloudfront:ListInvalidations",
+        "cloudfront:ListDistributions",
+        "cloudfront:TagResource",
+        "cloudfront:UntagResource",
+        "cloudfront:ListTagsForResource"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
