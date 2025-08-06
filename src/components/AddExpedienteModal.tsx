@@ -71,10 +71,10 @@ const AddExpedienteModal: React.FC<AddExpedienteModalProps> = ({ isOpen, onClose
             ...result,
             status: response.success ? 'success' : 'error',
             message: response.success 
-              ? `Siguiendo ${response.data?.expediente.caratula || iue}`
+              ? `Siguiendo ${response.data?.expediente.caratula?.replace(/<br\s*\/?>/gi, ' - ') || iue}`
               : response.error || 'Error al seguir expediente',
             expedienteInfo: response.success ? {
-              caratula: response.data?.expediente.caratula || '',
+              caratula: response.data?.expediente.caratula?.replace(/<br\s*\/?>/gi, ' - ') || '',
               origen: response.data?.expediente.origen || ''
             } : undefined
           } : result
@@ -97,11 +97,16 @@ const AddExpedienteModal: React.FC<AddExpedienteModalProps> = ({ isOpen, onClose
 
     setIsProcessing(false);
     
-    // Call success callback if any expedientes were successfully added
-    const successCount = results.filter(r => r.status === 'success').length;
-    if (successCount > 0 && onSuccess) {
-      onSuccess();
-    }
+    // Use a timeout to ensure state is updated before checking results
+    setTimeout(() => {
+      setResults(currentResults => {
+        const successCount = currentResults.filter(r => r.status === 'success').length;
+        if (successCount > 0 && onSuccess) {
+          onSuccess();
+        }
+        return currentResults;
+      });
+    }, 100);
   };
 
   const handleClear = () => {

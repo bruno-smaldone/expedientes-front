@@ -26,6 +26,25 @@ const ExpedienteDetail: React.FC = () => {
         if (response.success && response.data) {
           setExpedienteDetail(response.data);
           setError(null);
+
+          // Check if we need to mark as viewed
+          const movements = response.data.movements;
+          const lastViewedSK = response.data.lastViewedMovementSK;
+          
+          if (movements.length > 0) {
+            // Get the most recent movement (movements are sorted by date)
+            const sortedMovements = movements.sort((a, b) => {
+              const dateA = new Date(a.createdAt);
+              const dateB = new Date(b.createdAt);
+              return dateB.getTime() - dateA.getTime(); // Descending order (newest first)
+            });
+            const mostRecentMovementSK = sortedMovements[0].sk;
+            
+            // If the most recent movement is different from the last viewed, mark as viewed
+            if (!lastViewedSK || mostRecentMovementSK !== lastViewedSK) {
+              apiService.markExpedienteAsViewed(decodeURIComponent(iue));
+            }
+          }
         } else {
           setError(response.error || 'Failed to fetch expediente details');
         }
@@ -52,14 +71,14 @@ const ExpedienteDetail: React.FC = () => {
 
   // Helper function to extract decreto text from various formats
   const getDecretoText = (decretoText: string | { attributes?: any; $value: string } | undefined): string => {
-    if (!decretoText) return 'No content available';
+    if (!decretoText) return 'Sin contenido disponible';
     if (typeof decretoText === 'string') {
       return decretoText;
     }
     if (decretoText && typeof decretoText === 'object' && decretoText.$value) {
       return decretoText.$value;
     }
-    return 'No content available';
+    return 'Sin contenido disponible';
   };
 
   const formatMovementDate = (dateString: string) => {
@@ -74,8 +93,8 @@ const ExpedienteDetail: React.FC = () => {
   };
 
   const getMovementTypeColor = (tipo: string) => {
-    if (tipo.toLowerCase().includes('decreto')) {
-      return { bg: '#e8f5e8', text: '#2e7d32' };
+    if (tipo.toLowerCase().includes('decreto') || tipo.toLowerCase().includes('sentencia interlocutoria')) {
+      return { bg: '#f3e5f5', text: '#7b1fa2' };
     }
     if (tipo.toLowerCase().includes('mesa')) {
       return { bg: '#fff3e0', text: '#f57c00' };
@@ -92,7 +111,7 @@ const ExpedienteDetail: React.FC = () => {
   if (loading) {
     return (
       <div style={{ textAlign: 'center', padding: '2rem' }}>
-        <div>Loading expediente details...</div>
+        <div>Cargando detalles del expediente...</div>
       </div>
     );
   }
@@ -110,7 +129,7 @@ const ExpedienteDetail: React.FC = () => {
           Error: {error}
         </div>
         <Link to="/expedientes" style={{ color: '#1976d2', textDecoration: 'none' }}>
-          ← Back to Expedientes List
+          ← Volver a Lista de Expedientes
         </Link>
       </div>
     );
@@ -120,16 +139,16 @@ const ExpedienteDetail: React.FC = () => {
     return (
       <div>
         <div style={{ textAlign: 'center', padding: '2rem', color: '#666' }}>
-          Expediente not found
+          Expediente no encontrado
         </div>
         <Link to="/expedientes" style={{ color: '#1976d2', textDecoration: 'none' }}>
-          ← Back to Expedientes List
+          ← Volver a Lista de Expedientes
         </Link>
       </div>
     );
   }
 
-  const { expediente, movements, unreadCount, hasNewDecretos } = expedienteDetail;
+  const { expediente, movements, hasNewMovements, hasNewDecretos, lastViewedMovementSK } = expedienteDetail;
 
   return (
     <div>
@@ -143,7 +162,7 @@ const ExpedienteDetail: React.FC = () => {
             fontSize: '0.875rem'
           }}
         >
-          ← Back to Expedientes List
+          ← Volver a Lista de Expedientes
         </Link>
       </div>
 
@@ -160,12 +179,9 @@ const ExpedienteDetail: React.FC = () => {
             <h1 style={{ margin: '0 0 0.5rem 0', color: '#1976d2' }}>
               {expediente.iue}
             </h1>
-            <h2 
-              style={{ margin: '0 0 1rem 0', color: '#333', fontWeight: 'normal' }}
-              dangerouslySetInnerHTML={{ 
-                __html: expediente.caratula.replace(/<br>/g, '<br/>') 
-              }}
-            />
+            <h2 style={{ margin: '0 0 1rem 0', color: '#333', fontWeight: 'normal' }}>
+              {expediente.caratula.replace(/<br\s*\/?>/gi, ' - ')}
+            </h2>
           </div>
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
             {hasNewDecretos && (
@@ -177,10 +193,10 @@ const ExpedienteDetail: React.FC = () => {
                 fontSize: '0.75rem',
                 fontWeight: 'bold'
               }}>
-                NEW DECRETOS
+                NUEVOS DECRETOS
               </span>
             )}
-            {unreadCount > 0 && (
+            {hasNewMovements && (
               <span style={{
                 backgroundColor: '#ff9800',
                 color: 'white',
@@ -189,7 +205,7 @@ const ExpedienteDetail: React.FC = () => {
                 fontSize: '0.75rem',
                 fontWeight: 'bold'
               }}>
-                {unreadCount} unread
+                NUEVOS MOVIMIENTOS
               </span>
             )}
           </div>
@@ -203,13 +219,13 @@ const ExpedienteDetail: React.FC = () => {
         }}>
           <div>
             <div style={{ fontSize: '0.875rem', color: '#666', marginBottom: '0.25rem' }}>
-              Origin
+              Origen
             </div>
             <div style={{ fontWeight: 'bold' }}>{expediente.origen}</div>
           </div>
           <div>
             <div style={{ fontSize: '0.875rem', color: '#666', marginBottom: '0.25rem' }}>
-              Status
+              Estado
             </div>
             <div style={{
               backgroundColor: '#e8f5e8',
@@ -220,12 +236,12 @@ const ExpedienteDetail: React.FC = () => {
               fontWeight: 'bold',
               display: 'inline-block'
             }}>
-              {expediente.estado}
+              {expediente.status === 'active' ? 'Activo' : expediente.status === 'archived' ? 'Archivado' : expediente.status}
             </div>
           </div>
           <div>
             <div style={{ fontSize: '0.875rem', color: '#666', marginBottom: '0.25rem' }}>
-              Total Movements
+              Movimientos totales
             </div>
             <div style={{ fontWeight: 'bold', fontSize: '1.125rem', color: '#1976d2' }}>
               {expediente.movementCount}
@@ -233,7 +249,7 @@ const ExpedienteDetail: React.FC = () => {
           </div>
           <div>
             <div style={{ fontSize: '0.875rem', color: '#666', marginBottom: '0.25rem' }}>
-              Total Decretos
+              Decretos totales
             </div>
             <div style={{ fontWeight: 'bold', fontSize: '1.125rem', color: '#7b1fa2' }}>
               {expediente.decretoCount}
@@ -242,14 +258,14 @@ const ExpedienteDetail: React.FC = () => {
         </div>
 
         <div style={{ fontSize: '0.875rem', color: '#666' }}>
-          Last updated: {formatDate(expediente.updatedAt)}
+          Última actualización: {formatDate(expediente.updatedAt)}
         </div>
       </div>
 
       {/* Movements Timeline */}
       <div>
         <h2 style={{ color: '#333', marginBottom: '1.5rem' }}>
-          Movement History ({movements.length} total)
+          Historial de Movimientos ({movements.length} total)
         </h2>
 
         {movements.length === 0 ? (
@@ -260,7 +276,7 @@ const ExpedienteDetail: React.FC = () => {
             textAlign: 'center',
             color: '#666'
           }}>
-            No movements found for this expediente.
+            No se encontraron movimientos para este expediente.
           </div>
         ) : (
           <div style={{ position: 'relative' }}>
@@ -284,6 +300,9 @@ const ExpedienteDetail: React.FC = () => {
               .map((movement, index) => {
               const colors = getMovementTypeColor(movement.tipo);
               const isDecreto = movement.decretoNumber;
+              
+              // Check if this movement is newer than the last viewed
+              const isNewMovement = !lastViewedMovementSK || movement.sk > lastViewedMovementSK;
               
               return (
                 <div key={movement.sk} style={{
@@ -332,6 +351,19 @@ const ExpedienteDetail: React.FC = () => {
                         </div>
                         <div style={{ fontSize: '0.875rem', color: '#666' }}>
                           {formatMovementDate(movement.fecha)} • {movement.sede}
+                          {isNewMovement && (
+                            <span style={{
+                              backgroundColor: '#4caf50',
+                              color: 'white',
+                              padding: '0.125rem 0.5rem',
+                              borderRadius: '12px',
+                              fontSize: '0.625rem',
+                              fontWeight: 'bold',
+                              marginLeft: '0.5rem'
+                            }}>
+                              NUEVO
+                            </span>
+                          )}
                         </div>
                       </div>
                       <div style={{ textAlign: 'right' }}>
@@ -350,7 +382,7 @@ const ExpedienteDetail: React.FC = () => {
                         )}
                         {movement.vencimiento && (
                           <div style={{ fontSize: '0.75rem', color: '#f57c00' }}>
-                            Due: {movement.vencimiento}
+                            Vence: {movement.vencimiento}
                           </div>
                         )}
                       </div>
@@ -369,7 +401,7 @@ const ExpedienteDetail: React.FC = () => {
                           marginBottom: '0.5rem',
                           color: '#7b1fa2'
                         }}>
-                          Decreto Content:
+                          Contenido del Decreto:
                         </div>
                         <div style={{ 
                           fontSize: '0.875rem', 
@@ -378,7 +410,7 @@ const ExpedienteDetail: React.FC = () => {
                         }}>
                           {movement.isReserved ? (
                             <em style={{ color: '#666' }}>
-                              [Reserved decreto - content not available]
+                              [Decreto reservado - contenido no disponible]
                             </em>
                           ) : (
                             getDecretoText(movement.decretoText)
@@ -393,7 +425,7 @@ const ExpedienteDetail: React.FC = () => {
                       marginTop: '0.5rem',
                       textAlign: 'right'
                     }}>
-                      Added: {formatDate(movement.createdAt)}
+                      Agregado: {formatDate(movement.createdAt)}
                     </div>
                   </div>
                 </div>

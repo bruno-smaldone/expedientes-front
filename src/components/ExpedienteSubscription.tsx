@@ -61,10 +61,10 @@ const ExpedienteSubscription: React.FC<ExpedienteSubscriptionProps> = ({ onSucce
             ...result,
             status: response.success ? 'success' : 'error',
             message: response.success 
-              ? `Siguiendo ${response.data?.expediente.caratula || iue}`
+              ? `Siguiendo ${response.data?.expediente.caratula?.replace(/<br\s*\/?>/gi, ' - ') || iue}`
               : response.error || 'Error al seguir expediente',
             expedienteInfo: response.success ? {
-              caratula: response.data?.expediente.caratula || '',
+              caratula: response.data?.expediente.caratula?.replace(/<br\s*\/?>/gi, ' - ') || '',
               origen: response.data?.expediente.origen || ''
             } : undefined
           } : result

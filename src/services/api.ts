@@ -183,6 +183,13 @@ class ApiService {
       body: JSON.stringify(request),
     });
   }
+
+  async markExpedienteAsViewed(iue: string): Promise<ApiResponse<{ message: string }>> {
+    const encodedIue = encodeURIComponent(iue);
+    return this.makeRequest<{ message: string }>(`/api/expedientes/${encodedIue}/viewed`, {
+      method: 'PUT',
+    });
+  }
 }
 
 export const apiService = new ApiService();

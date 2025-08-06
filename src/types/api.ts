@@ -29,9 +29,11 @@ export interface Expediente {
   iue: string;
   caratula: string;
   origen: string;
-  estado: string;
+  status: string;
   movementCount: number;
   decretoCount: number;
+  lastMovementDate?: string;
+  lastDecretoDate?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -69,9 +71,9 @@ export interface TrackExpedienteResponse {
 
 export interface ExpedienteTracking {
   expediente: Expediente;
-  unreadCount: number;
+  hasNewMovements: boolean;
   hasNewDecretos: boolean;
-  lastViewedAt: string;
+  lastViewedMovementSK?: string;
   subscriptionDate: string;
 }
 
@@ -83,9 +85,9 @@ export interface ExpedientesListResponse {
 export interface ExpedienteDetailResponse {
   expediente: Expediente;
   movements: Movement[];
-  unreadCount: number;
+  hasNewMovements: boolean;
   hasNewDecretos: boolean;
-  userLastViewed?: string; // Made optional since backend doesn't always include it
+  lastViewedMovementSK?: string;
 }
 
 export interface RecentDecreto {
@@ -94,14 +96,13 @@ export interface RecentDecreto {
   decretoId: string;
   decretoDate: string;
   decretoText: string | { attributes?: any; $value: string };
-  isRead: boolean;
   movementSk: string;
 }
 
 export interface DashboardSummaryResponse {
   totalExpedientes: number;
   expedientesWithNewMovements: number;
-  expedientesWithUnreadDecretos: number;
+  expedientesWithNewDecretos: number;
   lastRefreshTimestamp: string | null;
-  recentDecretos: RecentDecreto[];
+  newDecretos: RecentDecreto[];
 }

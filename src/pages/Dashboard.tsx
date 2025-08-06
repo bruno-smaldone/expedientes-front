@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import apiService from '../services/api';
 import type { DashboardSummaryResponse, RecentDecreto } from '../types/api';
 
 const Dashboard: React.FC = () => {
+  const { user } = useAuth();
   const [dashboardData, setDashboardData] = useState<DashboardSummaryResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [tooltip, setTooltip] = useState<{text: string, x: number, y: number} | null>(null);
 
   const fetchDashboardData = async () => {
     try {
@@ -94,9 +97,9 @@ const Dashboard: React.FC = () => {
   return (
     <div>
       <div style={{ marginBottom: '2rem' }}>
-        <h1 style={{ color: '#1976d2', marginBottom: '0.5rem' }}>Dashboard</h1>
+        <h1 style={{ color: '#1976d2', marginBottom: '0.5rem' }}>¡Hola {user?.username}!</h1>
         <p style={{ color: '#666', margin: 0 }}>
-          Overview of your expedientes activity
+          Resumen de la actividad de tus expedientes
         </p>
       </div>
 
@@ -151,7 +154,7 @@ const Dashboard: React.FC = () => {
             Expedientes con nuevos movimientos
           </div>
           <Link 
-            to="/expedientes?sortBy=hasNewMovements"
+            to="/expedientes?view=movements-first"
             style={{
               color: '#f57c00',
               textDecoration: 'none',
@@ -173,13 +176,13 @@ const Dashboard: React.FC = () => {
           border: '1px solid #e0e0e0'
         }}>
           <div style={{ fontSize: '3rem', fontWeight: 'bold', color: '#7b1fa2', marginBottom: '0.5rem' }}>
-            {dashboardData.expedientesWithUnreadDecretos}
+            {dashboardData.expedientesWithNewDecretos}
           </div>
           <div style={{ color: '#333', fontWeight: '500', marginBottom: '1rem' }}>
             Expedientes con decretos no leídos
           </div>
           <Link 
-            to="/expedientes?filter=unreadDecretos"
+            to="/expedientes?view=decretos-first"
             style={{
               color: '#7b1fa2',
               textDecoration: 'none',
@@ -212,10 +215,10 @@ const Dashboard: React.FC = () => {
       {/* Recent Decretos Table */}
       <div style={{ marginBottom: '2rem' }}>
         <h2 style={{ color: '#333', marginBottom: '1.5rem' }}>
-          Decretos de los últimos 7 días
+          Decretos que no leiste
         </h2>
         
-        {dashboardData.recentDecretos.length === 0 ? (
+        {dashboardData.newDecretos.length === 0 ? (
           <div style={{
             backgroundColor: '#f5f5f5',
             padding: '3rem',
@@ -223,7 +226,7 @@ const Dashboard: React.FC = () => {
             textAlign: 'center',
             color: '#666'
           }}>
-            No hay decretos nuevos en los últimos 7 días.
+            No hay decretos sin leer.
           </div>
         ) : (
           <div style={{
@@ -259,7 +262,7 @@ const Dashboard: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {dashboardData.recentDecretos.map((decreto, index) => (
+                {dashboardData.newDecretos.map((decreto, index) => (
                   <tr key={`${decreto.expedienteId}-${decreto.movementSk}`} style={{
                     backgroundColor: index % 2 === 0 ? 'white' : '#fafafa',
                     borderBottom: '1px solid #e0e0e0'
@@ -278,16 +281,27 @@ const Dashboard: React.FC = () => {
                       </Link>
                     </td>
                     <td style={{ padding: '1rem', maxWidth: '250px' }}>
-                      <div style={{ 
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                        fontSize: '0.875rem'
-                      }}
-                      dangerouslySetInnerHTML={{ 
-                        __html: decreto.expedienteCaratula.replace(/<br>/g, ' ') 
-                      }}
-                      />
+                      <div 
+                        style={{ 
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                          fontSize: '0.875rem',
+                          cursor: 'help',
+                          position: 'relative'
+                        }}
+                        onMouseEnter={(e) => {
+                          const rect = e.currentTarget.getBoundingClientRect();
+                          setTooltip({
+                            text: `Carátula completa: ${decreto.expedienteCaratula.replace(/<br\s*\/?>/gi, ' - ')}`,
+                            x: rect.left,
+                            y: rect.bottom + 5
+                          });
+                        }}
+                        onMouseLeave={() => setTooltip(null)}
+                      >
+                        {decreto.expedienteCaratula.replace(/<br\s*\/?>/gi, ' - ')}
+                      </div>
                     </td>
                     <td style={{ padding: '1rem', fontSize: '0.875rem', fontWeight: 'bold' }}>
                       {decreto.decretoId}
@@ -296,35 +310,46 @@ const Dashboard: React.FC = () => {
                       {formatDate(decreto.decretoDate)}
                     </td>
                     <td style={{ padding: '1rem', maxWidth: '300px' }}>
-                      <div style={{ 
-                        fontSize: '0.8rem',
-                        lineHeight: '1.4',
-                        maxHeight: '4rem',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis'
-                      }}>
+                      <div 
+                        style={{ 
+                          fontSize: '0.8rem',
+                          lineHeight: '1.4',
+                          maxHeight: '4rem',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          cursor: 'help',
+                          position: 'relative'
+                        }}
+                        onMouseEnter={(e) => {
+                          const rect = e.currentTarget.getBoundingClientRect();
+                          setTooltip({
+                            text: `Decreto completo: ${getDecretoText(decreto.decretoText)}`,
+                            x: rect.left,
+                            y: rect.bottom + 5
+                          });
+                        }}
+                        onMouseLeave={() => setTooltip(null)}
+                      >
                         {getDecretoText(decreto.decretoText).substring(0, 200)}...
                       </div>
                     </td>
                     <td style={{ padding: '1rem', textAlign: 'center' }}>
-                      <button
-                        onClick={() => {
-                          // TODO: Implement mark as read functionality
-                          console.log('Mark as read:', decreto.expedienteId, decreto.movementSk);
-                        }}
+                      <Link
+                        to={`/expedientes/${encodeURIComponent(decreto.expedienteId)}`}
                         style={{
-                          backgroundColor: '#4caf50',
+                          backgroundColor: '#1976d2',
                           color: 'white',
                           border: 'none',
                           padding: '0.5rem 1rem',
                           borderRadius: '4px',
-                          cursor: 'pointer',
+                          textDecoration: 'none',
                           fontSize: '0.75rem',
-                          fontWeight: '600'
+                          fontWeight: '600',
+                          display: 'inline-block'
                         }}
                       >
-                        Marcar como visto
-                      </button>
+                        Ver todo
+                      </Link>
                     </td>
                   </tr>
                 ))}
@@ -333,6 +358,29 @@ const Dashboard: React.FC = () => {
           </div>
         )}
       </div>
+      
+      {/* Custom Tooltip */}
+      {tooltip && (
+        <div
+          style={{
+            position: 'fixed',
+            left: `${tooltip.x}px`,
+            top: `${tooltip.y}px`,
+            backgroundColor: '#333',
+            color: 'white',
+            padding: '0.5rem',
+            borderRadius: '4px',
+            fontSize: '0.75rem',
+            maxWidth: '400px',
+            wordWrap: 'break-word',
+            zIndex: 9999,
+            pointerEvents: 'none',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
+          }}
+        >
+          {tooltip.text}
+        </div>
+      )}
     </div>
   );
 };

@@ -26,7 +26,7 @@ const Layout: React.FC = () => {
         <div>
           <h1 style={{ margin: 0, fontSize: '1.5rem' }}>
             <Link to="/" style={{ color: 'white', textDecoration: 'none' }}>
-              Expedientes
+              Monitor de Expedientes
             </Link>
           </h1>
         </div>
@@ -55,22 +55,19 @@ const Layout: React.FC = () => {
           >
             + Agregar Expedientes
           </button>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <span>Welcome, {user?.username}!</span>
-            <button 
-              onClick={handleLogout}
-              style={{
-                background: 'transparent',
-                border: '1px solid white',
-                color: 'white',
-                padding: '0.25rem 0.75rem',
-                borderRadius: '4px',
-                cursor: 'pointer'
-              }}
-            >
-              Logout
-            </button>
-          </div>
+          <button 
+            onClick={handleLogout}
+            style={{
+              background: 'transparent',
+              border: '1px solid white',
+              color: 'white',
+              padding: '0.25rem 0.75rem',
+              borderRadius: '4px',
+              cursor: 'pointer'
+            }}
+          >
+            Logout
+          </button>
         </nav>
       </header>
       <main style={{ flex: 1, padding: '2rem' }}>

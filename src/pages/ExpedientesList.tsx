@@ -1,15 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import apiService from '../services/api';
 import type { ExpedienteTracking } from '../types/api';
 
+type ViewMode = 'normal' | 'decretos-first' | 'movements-first';
+
 const ExpedientesList: React.FC = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [expedientes, setExpedientes] = useState<ExpedienteTracking[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [sortField, setSortField] = useState<'iue' | 'caratula' | 'lastActivity'>('lastActivity');
+  const [sortField, setSortField] = useState<'iue' | 'caratula' | 'lastMovement' | 'lastDecreto'>('lastMovement');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [searchTerm, setSearchTerm] = useState('');
+  const [viewMode, setViewMode] = useState<ViewMode>(() => {
+    const view = searchParams.get('view') as ViewMode;
+    return ['normal', 'decretos-first', 'movements-first'].includes(view) ? view : 'normal';
+  });
+  const [tooltip, setTooltip] = useState<{text: string, x: number, y: number} | null>(null);
 
   useEffect(() => {
     const fetchExpedientes = async () => {
@@ -32,13 +40,27 @@ const ExpedientesList: React.FC = () => {
     fetchExpedientes();
   }, []);
 
-  const handleSort = (field: 'iue' | 'caratula' | 'lastActivity') => {
+  const handleSort = (field: 'iue' | 'caratula' | 'lastMovement' | 'lastDecreto') => {
+    // Only allow sorting in normal view mode
+    if (viewMode !== 'normal') return;
+    
     if (sortField === field) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
       setSortField(field);
       setSortDirection('asc');
     }
+  };
+
+  const handleViewModeChange = (mode: ViewMode) => {
+    setViewMode(mode);
+    const newSearchParams = new URLSearchParams(searchParams);
+    if (mode === 'normal') {
+      newSearchParams.delete('view');
+    } else {
+      newSearchParams.set('view', mode);
+    }
+    setSearchParams(newSearchParams);
   };
 
   // Filter expedientes based on search term
@@ -52,29 +74,68 @@ const ExpedientesList: React.FC = () => {
     return iueMatches || caratulaMatches;
   });
 
-  const sortedExpedientes = [...filteredExpedientes].sort((a, b) => {
-    let aValue: string, bValue: string;
+  const getGroupedExpedientes = () => {
+    let sortedExpedientes = [...filteredExpedientes];
     
-    switch (sortField) {
-      case 'iue':
-        aValue = a.expediente.iue;
-        bValue = b.expediente.iue;
-        break;
-      case 'caratula':
-        aValue = a.expediente.caratula;
-        bValue = b.expediente.caratula;
-        break;
-      case 'lastActivity':
-        aValue = a.expediente.updatedAt;
-        bValue = b.expediente.updatedAt;
-        break;
-      default:
-        return 0;
-    }
+    // Apply sorting only in normal view
+    if (viewMode === 'normal') {
+      sortedExpedientes = sortedExpedientes.sort((a, b) => {
+        let aValue: string, bValue: string;
+        
+        switch (sortField) {
+          case 'iue':
+            aValue = a.expediente.iue;
+            bValue = b.expediente.iue;
+            break;
+          case 'caratula':
+            aValue = a.expediente.caratula;
+            bValue = b.expediente.caratula;
+            break;
+          case 'lastMovement':
+            aValue = a.expediente.lastMovementDate || a.expediente.updatedAt;
+            bValue = b.expediente.lastMovementDate || b.expediente.updatedAt;
+            break;
+          case 'lastDecreto':
+            aValue = a.expediente.lastDecretoDate || '';
+            bValue = b.expediente.lastDecretoDate || '';
+            break;
+          default:
+            return 0;
+        }
 
-    const comparison = aValue.localeCompare(bValue);
-    return sortDirection === 'asc' ? comparison : -comparison;
-  });
+        const comparison = aValue.localeCompare(bValue);
+        return sortDirection === 'asc' ? comparison : -comparison;
+      });
+      
+      return [{ items: sortedExpedientes, title: null }];
+    }
+    
+    // Group by view mode
+    if (viewMode === 'decretos-first') {
+      const withDecretos = sortedExpedientes.filter(exp => exp.hasNewDecretos);
+      const withoutDecretos = sortedExpedientes.filter(exp => !exp.hasNewDecretos);
+      
+      return [
+        { items: withDecretos, title: `Expedientes con nuevos decretos (${withDecretos.length})` },
+        { items: withoutDecretos, title: `Otros expedientes (${withoutDecretos.length})` }
+      ].filter(group => group.items.length > 0);
+    }
+    
+    if (viewMode === 'movements-first') {
+      const withMovements = sortedExpedientes.filter(exp => exp.hasNewMovements);
+      const withoutMovements = sortedExpedientes.filter(exp => !exp.hasNewMovements);
+      
+      return [
+        { items: withMovements, title: `Expedientes con nuevos movimientos (${withMovements.length})` },
+        { items: withoutMovements, title: `Otros expedientes (${withoutMovements.length})` }
+      ].filter(group => group.items.length > 0);
+    }
+    
+    return [{ items: sortedExpedientes, title: null }];
+  };
+
+  const groupedExpedientes = getGroupedExpedientes();
+  const totalFilteredCount = groupedExpedientes.reduce((sum, group) => sum + group.items.length, 0);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -87,7 +148,8 @@ const ExpedientesList: React.FC = () => {
     });
   };
 
-  const getSortIcon = (field: 'iue' | 'caratula' | 'lastActivity') => {
+  const getSortIcon = (field: 'iue' | 'caratula' | 'lastMovement' | 'lastDecreto') => {
+    if (viewMode !== 'normal') return '↕️'; // Show neutral icon when sorting is disabled
     if (sortField !== field) return '↕️';
     return sortDirection === 'asc' ? '↑' : '↓';
   };
@@ -119,16 +181,24 @@ const ExpedientesList: React.FC = () => {
       <div style={{ marginBottom: '2rem' }}>
         <h1 style={{ color: '#1976d2', marginBottom: '0.5rem' }}>Todos mis Expedientes</h1>
         <p style={{ color: '#666', margin: 0 }}>
-          Complete list of all expedientes you are tracking ({expedientes.length} total
-          {searchTerm && `, ${sortedExpedientes.length} filtered`})
+          Lista completa de todos los expedientes que estás siguiendo ({expedientes.length} total
+          {searchTerm && `, ${totalFilteredCount} filtrados`})
         </p>
       </div>
 
-      {/* Search Bar */}
-      <div style={{ marginBottom: '2rem' }}>
+      {/* Search Bar and View Mode Controls */}
+      <div style={{ 
+        marginBottom: '2rem',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '2rem',
+        flexWrap: 'wrap'
+      }}>
+        {/* Search Bar */}
         <div style={{
           position: 'relative',
-          maxWidth: '400px'
+          flexShrink: 0,
+          minWidth: '300px'
         }}>
           <input
             type="text"
@@ -178,6 +248,49 @@ const ExpedientesList: React.FC = () => {
             </button>
           )}
         </div>
+
+        {/* View Mode Controls */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
+          <span style={{ fontSize: '0.875rem', fontWeight: '500', color: '#333', flexShrink: 0 }}>
+            Vista:
+          </span>
+          
+          <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', fontSize: '0.875rem', whiteSpace: 'nowrap' }}>
+            <input
+              type="radio"
+              name="viewMode"
+              value="normal"
+              checked={viewMode === 'normal'}
+              onChange={(e) => handleViewModeChange(e.target.value as ViewMode)}
+              style={{ marginRight: '0.5rem' }}
+            />
+            Vista normal (todos los expedientes)
+          </label>
+          
+          <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', fontSize: '0.875rem', whiteSpace: 'nowrap' }}>
+            <input
+              type="radio"
+              name="viewMode"
+              value="decretos-first"
+              checked={viewMode === 'decretos-first'}
+              onChange={(e) => handleViewModeChange(e.target.value as ViewMode)}
+              style={{ marginRight: '0.5rem' }}
+            />
+            Expedientes con nuevos decretos primero
+          </label>
+          
+          <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', fontSize: '0.875rem', whiteSpace: 'nowrap' }}>
+            <input
+              type="radio"
+              name="viewMode"
+              value="movements-first"
+              checked={viewMode === 'movements-first'}
+              onChange={(e) => handleViewModeChange(e.target.value as ViewMode)}
+              style={{ marginRight: '0.5rem' }}
+            />
+            Expedientes con nuevos movimientos primero
+          </label>
+        </div>
       </div>
 
       {expedientes.length === 0 ? (
@@ -191,7 +304,7 @@ const ExpedientesList: React.FC = () => {
           <h3 style={{ margin: '0 0 1rem 0' }}>No expedientes found</h3>
           <p>You are not currently tracking any expedientes.</p>
         </div>
-      ) : sortedExpedientes.length === 0 ? (
+      ) : totalFilteredCount === 0 ? (
         <div style={{
           backgroundColor: '#f5f5f5',
           padding: '3rem',
@@ -234,8 +347,9 @@ const ExpedientesList: React.FC = () => {
                   padding: '1rem',
                   textAlign: 'left',
                   borderBottom: '1px solid #e0e0e0',
-                  cursor: 'pointer',
-                  userSelect: 'none'
+                  cursor: viewMode === 'normal' ? 'pointer' : 'not-allowed',
+                  userSelect: 'none',
+                  opacity: viewMode === 'normal' ? 1 : 0.6
                 }} onClick={() => handleSort('iue')}>
                   IUE {getSortIcon('iue')}
                 </th>
@@ -243,38 +357,77 @@ const ExpedientesList: React.FC = () => {
                   padding: '1rem',
                   textAlign: 'left',
                   borderBottom: '1px solid #e0e0e0',
-                  cursor: 'pointer',
-                  userSelect: 'none'
+                  cursor: viewMode === 'normal' ? 'pointer' : 'not-allowed',
+                  userSelect: 'none',
+                  opacity: viewMode === 'normal' ? 1 : 0.6
                 }} onClick={() => handleSort('caratula')}>
                   Carátula {getSortIcon('caratula')}
-                </th>
-                <th style={{
-                  padding: '1rem',
-                  textAlign: 'left',
-                  borderBottom: '1px solid #e0e0e0',
-                  cursor: 'pointer',
-                  userSelect: 'none'
-                }} onClick={() => handleSort('lastActivity')}>
-                  Last Activity {getSortIcon('lastActivity')}
-                </th>
-                <th style={{
-                  padding: '1rem',
-                  textAlign: 'left',
-                  borderBottom: '1px solid #e0e0e0'
-                }}>
-                  Status
                 </th>
                 <th style={{
                   padding: '1rem',
                   textAlign: 'center',
                   borderBottom: '1px solid #e0e0e0'
                 }}>
-                  Activity
+                  Movimientos
+                </th>
+                <th style={{
+                  padding: '1rem',
+                  textAlign: 'center',
+                  borderBottom: '1px solid #e0e0e0'
+                }}>
+                  Decretos
+                </th>
+                <th style={{
+                  padding: '1rem',
+                  textAlign: 'left',
+                  borderBottom: '1px solid #e0e0e0',
+                  cursor: viewMode === 'normal' ? 'pointer' : 'not-allowed',
+                  userSelect: 'none',
+                  opacity: viewMode === 'normal' ? 1 : 0.6
+                }} onClick={() => handleSort('lastMovement')}>
+                  Último movimiento {getSortIcon('lastMovement')}
+                </th>
+                <th style={{
+                  padding: '1rem',
+                  textAlign: 'left',
+                  borderBottom: '1px solid #e0e0e0',
+                  cursor: viewMode === 'normal' ? 'pointer' : 'not-allowed',
+                  userSelect: 'none',
+                  opacity: viewMode === 'normal' ? 1 : 0.6
+                }} onClick={() => handleSort('lastDecreto')}>
+                  Último decreto {getSortIcon('lastDecreto')}
+                </th>
+                <th style={{
+                  padding: '1rem',
+                  textAlign: 'center',
+                  borderBottom: '1px solid #e0e0e0'
+                }}>
+                  Actividad
                 </th>
               </tr>
             </thead>
             <tbody>
-              {sortedExpedientes.map((expediente, index) => (
+              {groupedExpedientes.map((group, groupIndex) => (
+                <React.Fragment key={`group-${groupIndex}`}>
+                  {group.title && (
+                    <tr>
+                      <td 
+                        colSpan={7} 
+                        style={{
+                          backgroundColor: '#f0f4f8',
+                          padding: '0.75rem 1rem',
+                          fontWeight: '600',
+                          fontSize: '0.875rem',
+                          color: '#1976d2',
+                          borderBottom: '1px solid #e0e0e0',
+                          borderTop: groupIndex > 0 ? '2px solid #1976d2' : 'none'
+                        }}
+                      >
+                        {group.title}
+                      </td>
+                    </tr>
+                  )}
+                  {group.items.map((expediente, index) => (
                 <tr key={expediente.expediente.iue} style={{
                   backgroundColor: index % 2 === 0 ? 'white' : '#fafafa',
                   borderBottom: '1px solid #e0e0e0'
@@ -296,12 +449,25 @@ const ExpedientesList: React.FC = () => {
                     padding: '1rem',
                     maxWidth: '300px'
                   }}>
-                    <div style={{ 
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap'
-                    }}>
-                      {expediente.expediente.caratula}
+                    <div 
+                      style={{ 
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                        cursor: 'help',
+                        position: 'relative'
+                      }}
+                      onMouseEnter={(e) => {
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        setTooltip({
+                          text: `Carátula completa: ${expediente.expediente.caratula.replace(/<br\s*\/?>/gi, ' - ')}`,
+                          x: rect.left,
+                          y: rect.bottom + 5
+                        });
+                      }}
+                      onMouseLeave={() => setTooltip(null)}
+                    >
+                      {expediente.expediente.caratula.replace(/<br\s*\/?>/gi, ' - ')}
                     </div>
                     <div style={{ 
                       fontSize: '0.75rem', 
@@ -311,21 +477,35 @@ const ExpedientesList: React.FC = () => {
                       {expediente.expediente.origen}
                     </div>
                   </td>
-                  <td style={{ padding: '1rem', fontSize: '0.875rem' }}>
-                    {formatDate(expediente.expediente.updatedAt)}
+                  <td style={{ padding: '1rem', textAlign: 'center', fontSize: '0.875rem' }}>
+                    <span style={{
+                      backgroundColor: '#e3f2fd',
+                      color: '#1976d2',
+                      padding: '0.25rem 0.5rem',
+                      borderRadius: '4px',
+                      fontSize: '0.875rem',
+                      fontWeight: 'bold'
+                    }}>
+                      {expediente.expediente.movementCount}
+                    </span>
+                  </td>
+                  <td style={{ padding: '1rem', textAlign: 'center', fontSize: '0.875rem' }}>
+                    <span style={{
+                      backgroundColor: '#f3e5f5',
+                      color: '#7b1fa2',
+                      padding: '0.25rem 0.5rem',
+                      borderRadius: '4px',
+                      fontSize: '0.875rem',
+                      fontWeight: 'bold'
+                    }}>
+                      {expediente.expediente.decretoCount}
+                    </span>
                   </td>
                   <td style={{ padding: '1rem', fontSize: '0.875rem' }}>
-                    <div style={{
-                      backgroundColor: '#e8f5e8',
-                      color: '#2e7d32',
-                      padding: '0.25rem 0.5rem',
-                      borderRadius: '12px',
-                      fontSize: '0.75rem',
-                      fontWeight: 'bold',
-                      display: 'inline-block'
-                    }}>
-                      {expediente.expediente.estado}
-                    </div>
+                    {expediente.expediente.lastMovementDate || '-'}
+                  </td>
+                  <td style={{ padding: '1rem', fontSize: '0.875rem' }}>
+                    {expediente.expediente.lastDecretoDate || '-'}
                   </td>
                   <td style={{ padding: '1rem', textAlign: 'center' }}>
                     <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -338,47 +518,52 @@ const ExpedientesList: React.FC = () => {
                           fontSize: '0.7rem',
                           fontWeight: 'bold'
                         }}>
-                          NEW DECRETOS
+                          NUEVOS DECRETOS
                         </span>
                       )}
-                      {expediente.unreadCount > 0 && (
+                      {expediente.hasNewMovements && !expediente.hasNewDecretos && (
                         <span style={{
                           backgroundColor: '#ff9800',
                           color: 'white',
                           padding: '0.25rem 0.5rem',
-                          borderRadius: '12px',
+                          borderRadius: '4px',
                           fontSize: '0.7rem',
                           fontWeight: 'bold'
                         }}>
-                          {expediente.unreadCount} unread
+                          NUEVOS MOVIMIENTOS
                         </span>
                       )}
-                      <span style={{
-                        backgroundColor: '#e3f2fd',
-                        color: '#1976d2',
-                        padding: '0.25rem 0.5rem',
-                        borderRadius: '4px',
-                        fontSize: '0.7rem',
-                        fontWeight: 'bold'
-                      }}>
-                        {expediente.expediente.movementCount} mov
-                      </span>
-                      <span style={{
-                        backgroundColor: '#f3e5f5',
-                        color: '#7b1fa2',
-                        padding: '0.25rem 0.5rem',
-                        borderRadius: '4px',
-                        fontSize: '0.7rem',
-                        fontWeight: 'bold'
-                      }}>
-                        {expediente.expediente.decretoCount} dec
-                      </span>
                     </div>
                   </td>
                 </tr>
+                  ))}
+                </React.Fragment>
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+      
+      {/* Custom Tooltip */}
+      {tooltip && (
+        <div
+          style={{
+            position: 'fixed',
+            left: `${tooltip.x}px`,
+            top: `${tooltip.y}px`,
+            backgroundColor: '#333',
+            color: 'white',
+            padding: '0.5rem',
+            borderRadius: '4px',
+            fontSize: '0.75rem',
+            maxWidth: '300px',
+            wordWrap: 'break-word',
+            zIndex: 9999,
+            pointerEvents: 'none',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
+          }}
+        >
+          {tooltip.text}
         </div>
       )}
     </div>
