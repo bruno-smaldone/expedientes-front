@@ -1,4 +1,4 @@
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean;
   data?: T;
   error?: string;
@@ -95,7 +95,7 @@ export interface RecentDecreto {
   expedienteCaratula: string;
   decretoId: string;
   decretoDate: string;
-  decretoText: string | { attributes?: any; $value: string };
+  decretoText: string | { attributes?: Record<string, unknown>; $value: string };
   movementSk: string;
 }
 

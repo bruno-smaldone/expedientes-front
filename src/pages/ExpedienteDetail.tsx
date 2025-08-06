@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import apiService from '../services/api';
-import type { ExpedienteDetailResponse, Movement } from '../types/api';
+import type { ExpedienteDetailResponse } from '../types/api';
 
 const ExpedienteDetail: React.FC = () => {
   const { iue } = useParams<{ iue: string }>();
@@ -70,7 +70,7 @@ const ExpedienteDetail: React.FC = () => {
   };
 
   // Helper function to extract decreto text from various formats
-  const getDecretoText = (decretoText: string | { attributes?: any; $value: string } | undefined): string => {
+  const getDecretoText = (decretoText: string | { attributes?: Record<string, unknown>; $value: string } | undefined): string => {
     if (!decretoText) return 'Sin contenido disponible';
     if (typeof decretoText === 'string') {
       return decretoText;
@@ -297,7 +297,7 @@ const ExpedienteDetail: React.FC = () => {
                 const dateB = new Date(b.createdAt);
                 return dateA.getTime() - dateB.getTime();
               })
-              .map((movement, index) => {
+              .map((movement) => {
               const colors = getMovementTypeColor(movement.tipo);
               const isDecreto = movement.decretoNumber;
               

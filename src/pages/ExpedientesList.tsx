@@ -137,16 +137,6 @@ const ExpedientesList: React.FC = () => {
   const groupedExpedientes = getGroupedExpedientes();
   const totalFilteredCount = groupedExpedientes.reduce((sum, group) => sum + group.items.length, 0);
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('es-UY', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
 
   const getSortIcon = (field: 'iue' | 'caratula' | 'lastMovement' | 'lastDecreto') => {
     if (viewMode !== 'normal') return '↕️'; // Show neutral icon when sorting is disabled

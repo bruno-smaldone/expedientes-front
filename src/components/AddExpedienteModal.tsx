@@ -84,7 +84,7 @@ const AddExpedienteModal: React.FC<AddExpedienteModalProps> = ({ isOpen, onClose
         if (i < iues.length - 1) {
           await new Promise(resolve => setTimeout(resolve, 500));
         }
-      } catch (error) {
+      } catch (_error) { // eslint-disable-line @typescript-eslint/no-unused-vars
         setResults(prev => prev.map((result, index) => 
           index === i ? {
             ...result,
@@ -117,33 +117,33 @@ const AddExpedienteModal: React.FC<AddExpedienteModalProps> = ({ isOpen, onClose
   const getStatusIcon = (status: SubscriptionResult['status']) => {
     switch (status) {
       case 'pending':
-        return <span style={{ color: '#ff9800' }}>⏳</span>;
+        return <span style={{ color: '#f59e0b' }}>⏳</span>;
       case 'success':
-        return <span style={{ color: '#4caf50' }}>✅</span>;
+        return <span style={{ color: '#65A30D' }}>✅</span>;
       case 'error':
-        return <span style={{ color: '#f44336' }}>❌</span>;
+        return <span style={{ color: '#B91C1C' }}>❌</span>;
     }
   };
 
   const getStatusColor = (status: SubscriptionResult['status']) => {
     switch (status) {
       case 'pending':
-        return '#fff3e0';
+        return '#fef3c7';
       case 'success':
         return '#ecfccb';
       case 'error':
-        return '#ffebee';
+        return '#fef2f2';
     }
   };
 
   const getStatusTextColor = (status: SubscriptionResult['status']) => {
     switch (status) {
       case 'pending':
-        return '#f57c00';
+        return '#d97706';
       case 'success':
         return '#65A30D';
       case 'error':
-        return '#c62828';
+        return '#B91C1C';
     }
   };
 
@@ -173,7 +173,7 @@ const AddExpedienteModal: React.FC<AddExpedienteModalProps> = ({ isOpen, onClose
           style={{
             backgroundColor: 'white',
             borderRadius: '8px',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
             width: '100%',
             maxWidth: '600px',
             maxHeight: '90vh',
@@ -186,14 +186,14 @@ const AddExpedienteModal: React.FC<AddExpedienteModalProps> = ({ isOpen, onClose
           {/* Modal Header */}
           <div style={{
             padding: '2rem 2rem 0 2rem',
-            borderBottom: results.length > 0 ? '1px solid #e0e0e0' : 'none'
+            borderBottom: results.length > 0 ? '1px solid #e5e7eb' : 'none'
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
               <div>
                 <h2 style={{ color: '#1E40AF', marginBottom: '0.5rem', margin: 0 }}>
                   Agregar expedientes
                 </h2>
-                <p style={{ color: '#666', margin: 0, fontSize: '0.9rem' }}>
+                <p style={{ color: '#475569', margin: 0, fontSize: '0.9rem' }}>
                   Ingresa uno o más IUEs de expedientes para comenzar a seguirlos
                 </p>
               </div>
@@ -205,7 +205,7 @@ const AddExpedienteModal: React.FC<AddExpedienteModalProps> = ({ isOpen, onClose
                   border: 'none',
                   fontSize: '1.5rem',
                   cursor: isProcessing ? 'not-allowed' : 'pointer',
-                  color: '#666',
+                  color: '#6b7280',
                   padding: '0.25rem',
                   borderRadius: '4px',
                   display: 'flex',
@@ -224,7 +224,7 @@ const AddExpedienteModal: React.FC<AddExpedienteModalProps> = ({ isOpen, onClose
                   display: 'block', 
                   marginBottom: '0.5rem', 
                   fontWeight: '500',
-                  color: '#333',
+                  color: '#1f2937',
                   fontSize: '0.875rem'
                 }}>
                   IUEs de Expedientes
@@ -238,14 +238,14 @@ const AddExpedienteModal: React.FC<AddExpedienteModalProps> = ({ isOpen, onClose
                     width: '100%',
                     minHeight: '100px',
                     padding: '0.875rem',
-                    border: '1px solid #e0e0e0',
-                    borderRadius: '4px',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '6px',
                     fontSize: '0.875rem',
                     fontFamily: 'monospace',
                     resize: 'vertical',
                     boxSizing: 'border-box',
-                    backgroundColor: isProcessing ? '#f5f5f5' : 'white',
-                    color: '#333'
+                    backgroundColor: isProcessing ? '#f9fafb' : 'white',
+                    color: '#1f2937'
                   }}
                 />
               </div>
@@ -256,10 +256,10 @@ const AddExpedienteModal: React.FC<AddExpedienteModalProps> = ({ isOpen, onClose
                   disabled={isProcessing || !inputText.trim()}
                   style={{
                     padding: '0.75rem 1.5rem',
-                    backgroundColor: isProcessing || !inputText.trim() ? '#ccc' : '#1E40AF',
+                    backgroundColor: isProcessing || !inputText.trim() ? '#9ca3af' : '#1E40AF',
                     color: 'white',
                     border: 'none',
-                    borderRadius: '4px',
+                    borderRadius: '6px',
                     fontSize: '0.875rem',
                     fontWeight: '600',
                     cursor: isProcessing || !inputText.trim() ? 'not-allowed' : 'pointer',
@@ -276,9 +276,9 @@ const AddExpedienteModal: React.FC<AddExpedienteModalProps> = ({ isOpen, onClose
                   style={{
                     padding: '0.75rem 1.5rem',
                     backgroundColor: 'transparent',
-                    color: '#666',
-                    border: '1px solid #e0e0e0',
-                    borderRadius: '4px',
+                    color: '#6b7280',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '6px',
                     fontSize: '0.875rem',
                     fontWeight: '500',
                     cursor: isProcessing ? 'not-allowed' : 'pointer',
@@ -295,7 +295,7 @@ const AddExpedienteModal: React.FC<AddExpedienteModalProps> = ({ isOpen, onClose
                   style={{
                     padding: '0.75rem 1.5rem',
                     backgroundColor: 'transparent',
-                    color: '#666',
+                    color: '#6b7280',
                     border: 'none',
                     fontSize: '0.875rem',
                     fontWeight: '500',
@@ -315,10 +315,10 @@ const AddExpedienteModal: React.FC<AddExpedienteModalProps> = ({ isOpen, onClose
               padding: '1.5rem 2rem 2rem 2rem',
               maxHeight: '400px',
               overflowY: 'auto',
-              borderTop: '1px solid #e0e0e0'
+              borderTop: '1px solid #e5e7eb'
             }}>
               <h3 style={{ 
-                color: '#333', 
+                color: '#1f2937', 
                 marginBottom: '1rem', 
                 margin: '0 0 1rem 0',
                 fontSize: '1rem'
@@ -366,7 +366,7 @@ const AddExpedienteModal: React.FC<AddExpedienteModalProps> = ({ isOpen, onClose
                       {result.expedienteInfo && (
                         <div style={{ 
                           fontSize: '0.75rem', 
-                          color: '#666',
+                          color: '#6b7280',
                           marginTop: '0.25rem'
                         }}>
                           {result.expedienteInfo.origen}

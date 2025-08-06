@@ -74,7 +74,7 @@ const ExpedienteSubscription: React.FC<ExpedienteSubscriptionProps> = ({ onSucce
         if (i < iues.length - 1) {
           await new Promise(resolve => setTimeout(resolve, 500));
         }
-      } catch (error) {
+      } catch (_error) { // eslint-disable-line @typescript-eslint/no-unused-vars
         setResults(prev => prev.map((result, index) => 
           index === i ? {
             ...result,

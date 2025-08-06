@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import apiService from '../services/api';
-import type { DashboardSummaryResponse, RecentDecreto } from '../types/api';
+import type { DashboardSummaryResponse } from '../types/api';
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
@@ -34,7 +34,7 @@ const Dashboard: React.FC = () => {
   }, []);
 
   // Helper function to extract decreto text from various formats
-  const getDecretoText = (decretoText: string | { attributes?: any; $value: string }): string => {
+  const getDecretoText = (decretoText: string | { attributes?: Record<string, unknown>; $value: string }): string => {
     if (typeof decretoText === 'string') {
       return decretoText;
     }

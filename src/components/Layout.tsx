@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import AddExpedienteModal from './AddExpedienteModal';
 
 const Layout: React.FC = () => {
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
   const navigate = useNavigate();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
