@@ -94,16 +94,16 @@ const ExpedienteDetail: React.FC = () => {
 
   const getMovementTypeColor = (tipo: string) => {
     if (tipo.toLowerCase().includes('decreto') || tipo.toLowerCase().includes('sentencia interlocutoria')) {
-      return { bg: '#f3e5f5', text: '#7b1fa2' };
+      return { bg: '#fef2f2', text: '#B91C1C' };
     }
     if (tipo.toLowerCase().includes('mesa')) {
       return { bg: '#fff3e0', text: '#f57c00' };
     }
     if (tipo.toLowerCase().includes('presentación')) {
-      return { bg: '#e3f2fd', text: '#1976d2' };
+      return { bg: '#dbeafe', text: '#1E40AF' };
     }
     if (tipo.toLowerCase().includes('audiencia')) {
-      return { bg: '#f3e5f5', text: '#7b1fa2' };
+      return { bg: '#fef2f2', text: '#B91C1C' };
     }
     return { bg: '#f5f5f5', text: '#666' };
   };
@@ -128,7 +128,7 @@ const ExpedienteDetail: React.FC = () => {
         }}>
           Error: {error}
         </div>
-        <Link to="/expedientes" style={{ color: '#1976d2', textDecoration: 'none' }}>
+        <Link to="/expedientes" style={{ color: '#1E40AF', textDecoration: 'none' }}>
           ← Volver a Lista de Expedientes
         </Link>
       </div>
@@ -141,7 +141,7 @@ const ExpedienteDetail: React.FC = () => {
         <div style={{ textAlign: 'center', padding: '2rem', color: '#666' }}>
           Expediente no encontrado
         </div>
-        <Link to="/expedientes" style={{ color: '#1976d2', textDecoration: 'none' }}>
+        <Link to="/expedientes" style={{ color: '#1E40AF', textDecoration: 'none' }}>
           ← Volver a Lista de Expedientes
         </Link>
       </div>
@@ -157,7 +157,7 @@ const ExpedienteDetail: React.FC = () => {
         <Link 
           to="/expedientes" 
           style={{ 
-            color: '#1976d2', 
+            color: '#1E40AF', 
             textDecoration: 'none',
             fontSize: '0.875rem'
           }}
@@ -176,7 +176,7 @@ const ExpedienteDetail: React.FC = () => {
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
           <div>
-            <h1 style={{ margin: '0 0 0.5rem 0', color: '#1976d2' }}>
+            <h1 style={{ margin: '0 0 0.5rem 0', color: '#1E40AF' }}>
               {expediente.iue}
             </h1>
             <h2 style={{ margin: '0 0 1rem 0', color: '#333', fontWeight: 'normal' }}>
@@ -186,7 +186,7 @@ const ExpedienteDetail: React.FC = () => {
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
             {hasNewDecretos && (
               <span style={{
-                backgroundColor: '#4caf50',
+                backgroundColor: '#65A30D',
                 color: 'white',
                 padding: '0.25rem 0.75rem',
                 borderRadius: '4px',
@@ -198,7 +198,7 @@ const ExpedienteDetail: React.FC = () => {
             )}
             {hasNewMovements && (
               <span style={{
-                backgroundColor: '#ff9800',
+                backgroundColor: '#B91C1C',
                 color: 'white',
                 padding: '0.25rem 0.75rem',
                 borderRadius: '16px',
@@ -228,8 +228,8 @@ const ExpedienteDetail: React.FC = () => {
               Estado
             </div>
             <div style={{
-              backgroundColor: '#e8f5e8',
-              color: '#2e7d32',
+              backgroundColor: '#ecfccb',
+              color: '#65A30D',
               padding: '0.25rem 0.75rem',
               borderRadius: '16px',
               fontSize: '0.875rem',
@@ -243,7 +243,7 @@ const ExpedienteDetail: React.FC = () => {
             <div style={{ fontSize: '0.875rem', color: '#666', marginBottom: '0.25rem' }}>
               Movimientos totales
             </div>
-            <div style={{ fontWeight: 'bold', fontSize: '1.125rem', color: '#1976d2' }}>
+            <div style={{ fontWeight: 'bold', fontSize: '1.125rem', color: '#1E40AF' }}>
               {expediente.movementCount}
             </div>
           </div>
@@ -251,7 +251,7 @@ const ExpedienteDetail: React.FC = () => {
             <div style={{ fontSize: '0.875rem', color: '#666', marginBottom: '0.25rem' }}>
               Decretos totales
             </div>
-            <div style={{ fontWeight: 'bold', fontSize: '1.125rem', color: '#7b1fa2' }}>
+            <div style={{ fontWeight: 'bold', fontSize: '1.125rem', color: '#B91C1C' }}>
               {expediente.decretoCount}
             </div>
           </div>
@@ -264,7 +264,7 @@ const ExpedienteDetail: React.FC = () => {
 
       {/* Movements Timeline */}
       <div>
-        <h2 style={{ color: '#333', marginBottom: '1.5rem' }}>
+        <h2 style={{ color: '#1E40AF', marginBottom: '1.5rem' }}>
           Historial de Movimientos ({movements.length} total)
         </h2>
 
@@ -328,7 +328,7 @@ const ExpedienteDetail: React.FC = () => {
                     borderRadius: '8px',
                     padding: '1.5rem',
                     boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                    border: isDecreto ? '2px solid #7b1fa2' : '1px solid #e0e0e0'
+                    border: isDecreto ? '2px solid #B91C1C' : '1px solid #e0e0e0'
                   }}>
                     <div style={{ 
                       display: 'flex', 
@@ -353,7 +353,7 @@ const ExpedienteDetail: React.FC = () => {
                           {formatMovementDate(movement.fecha)} • {movement.sede}
                           {isNewMovement && (
                             <span style={{
-                              backgroundColor: '#4caf50',
+                              backgroundColor: '#65A30D',
                               color: 'white',
                               padding: '0.125rem 0.5rem',
                               borderRadius: '12px',
@@ -369,7 +369,7 @@ const ExpedienteDetail: React.FC = () => {
                       <div style={{ textAlign: 'right' }}>
                         {isDecreto && (
                           <div style={{
-                            backgroundColor: '#7b1fa2',
+                            backgroundColor: '#B91C1C',
                             color: 'white',
                             padding: '0.25rem 0.75rem',
                             borderRadius: '4px',
@@ -393,13 +393,13 @@ const ExpedienteDetail: React.FC = () => {
                         backgroundColor: '#f8f9fa',
                         padding: '1rem',
                         borderRadius: '4px',
-                        borderLeft: '4px solid #7b1fa2'
+                        borderLeft: '4px solid #B91C1C'
                       }}>
                         <div style={{ 
                           fontSize: '0.875rem', 
                           fontWeight: 'bold', 
                           marginBottom: '0.5rem',
-                          color: '#7b1fa2'
+                          color: '#B91C1C'
                         }}>
                           Contenido del Decreto:
                         </div>

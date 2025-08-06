@@ -97,8 +97,8 @@ const Dashboard: React.FC = () => {
   return (
     <div>
       <div style={{ marginBottom: '2rem' }}>
-        <h1 style={{ color: '#1976d2', marginBottom: '0.5rem' }}>¡Hola {user?.username}!</h1>
-        <p style={{ color: '#666', margin: 0 }}>
+        <h1 style={{ color: '#1E40AF', marginBottom: '0.5rem' }}>¡Hola {user?.username}!</h1>
+        <p style={{ color: '#475569', margin: 0 }}>
           Resumen de la actividad de tus expedientes
         </p>
       </div>
@@ -119,7 +119,7 @@ const Dashboard: React.FC = () => {
           boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
           border: '1px solid #e0e0e0'
         }}>
-          <div style={{ fontSize: '3rem', fontWeight: 'bold', color: '#1976d2', marginBottom: '0.5rem' }}>
+          <div style={{ fontSize: '3rem', fontWeight: 'bold', color: '#1E40AF', marginBottom: '0.5rem' }}>
             {dashboardData.totalExpedientes}
           </div>
           <div style={{ color: '#333', fontWeight: '500', marginBottom: '1rem' }}>
@@ -128,7 +128,7 @@ const Dashboard: React.FC = () => {
           <Link 
             to="/expedientes?sortBy=lastActivity"
             style={{
-              color: '#1976d2',
+              color: '#1E40AF',
               textDecoration: 'none',
               fontSize: '0.875rem',
               fontWeight: '500'
@@ -147,7 +147,7 @@ const Dashboard: React.FC = () => {
           boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
           border: '1px solid #e0e0e0'
         }}>
-          <div style={{ fontSize: '3rem', fontWeight: 'bold', color: '#f57c00', marginBottom: '0.5rem' }}>
+          <div style={{ fontSize: '3rem', fontWeight: 'bold', color: '#B91C1C', marginBottom: '0.5rem' }}>
             {dashboardData.expedientesWithNewMovements}
           </div>
           <div style={{ color: '#333', fontWeight: '500', marginBottom: '1rem' }}>
@@ -156,7 +156,7 @@ const Dashboard: React.FC = () => {
           <Link 
             to="/expedientes?view=movements-first"
             style={{
-              color: '#f57c00',
+              color: '#B91C1C',
               textDecoration: 'none',
               fontSize: '0.875rem',
               fontWeight: '500'
@@ -175,7 +175,7 @@ const Dashboard: React.FC = () => {
           boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
           border: '1px solid #e0e0e0'
         }}>
-          <div style={{ fontSize: '3rem', fontWeight: 'bold', color: '#7b1fa2', marginBottom: '0.5rem' }}>
+          <div style={{ fontSize: '3rem', fontWeight: 'bold', color: '#B91C1C', marginBottom: '0.5rem' }}>
             {dashboardData.expedientesWithNewDecretos}
           </div>
           <div style={{ color: '#333', fontWeight: '500', marginBottom: '1rem' }}>
@@ -184,7 +184,7 @@ const Dashboard: React.FC = () => {
           <Link 
             to="/expedientes?view=decretos-first"
             style={{
-              color: '#7b1fa2',
+              color: '#B91C1C',
               textDecoration: 'none',
               fontSize: '0.875rem',
               fontWeight: '500'
@@ -203,7 +203,7 @@ const Dashboard: React.FC = () => {
           boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
           border: '1px solid #e0e0e0'
         }}>
-          <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#4caf50', marginBottom: '0.5rem' }}>
+          <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#65A30D', marginBottom: '0.5rem' }}>
             {formatRefreshTime(dashboardData.lastRefreshTimestamp)}
           </div>
           <div style={{ color: '#333', fontWeight: '500' }}>
@@ -214,7 +214,7 @@ const Dashboard: React.FC = () => {
 
       {/* Recent Decretos Table */}
       <div style={{ marginBottom: '2rem' }}>
-        <h2 style={{ color: '#333', marginBottom: '1.5rem' }}>
+        <h2 style={{ color: '#1E40AF', marginBottom: '1.5rem' }}>
           Decretos que no leiste
         </h2>
         
@@ -271,7 +271,7 @@ const Dashboard: React.FC = () => {
                       <Link 
                         to={`/expedientes/${encodeURIComponent(decreto.expedienteId)}`}
                         style={{
-                          color: '#1976d2',
+                          color: '#1E40AF',
                           textDecoration: 'none',
                           fontWeight: 'bold',
                           fontSize: '0.9rem'
@@ -337,7 +337,7 @@ const Dashboard: React.FC = () => {
                       <Link
                         to={`/expedientes/${encodeURIComponent(decreto.expedienteId)}`}
                         style={{
-                          backgroundColor: '#1976d2',
+                          backgroundColor: '#1E40AF',
                           color: 'white',
                           border: 'none',
                           padding: '0.5rem 1rem',

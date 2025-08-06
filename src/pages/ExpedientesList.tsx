@@ -179,7 +179,7 @@ const ExpedientesList: React.FC = () => {
   return (
     <div>
       <div style={{ marginBottom: '2rem' }}>
-        <h1 style={{ color: '#1976d2', marginBottom: '0.5rem' }}>Todos mis Expedientes</h1>
+        <h1 style={{ color: '#1E40AF', marginBottom: '0.5rem' }}>Todos mis Expedientes</h1>
         <p style={{ color: '#666', margin: 0 }}>
           Lista completa de todos los expedientes que estás siguiendo ({expedientes.length} total
           {searchTerm && `, ${totalFilteredCount} filtrados`})
@@ -317,7 +317,7 @@ const ExpedientesList: React.FC = () => {
           <button
             onClick={() => setSearchTerm('')}
             style={{
-              backgroundColor: '#1976d2',
+              backgroundColor: '#1E40AF',
               color: 'white',
               border: 'none',
               padding: '0.75rem 1.5rem',
@@ -418,9 +418,9 @@ const ExpedientesList: React.FC = () => {
                           padding: '0.75rem 1rem',
                           fontWeight: '600',
                           fontSize: '0.875rem',
-                          color: '#1976d2',
+                          color: '#1E40AF',
                           borderBottom: '1px solid #e0e0e0',
-                          borderTop: groupIndex > 0 ? '2px solid #1976d2' : 'none'
+                          borderTop: groupIndex > 0 ? '2px solid #1E40AF' : 'none'
                         }}
                       >
                         {group.title}
@@ -436,7 +436,7 @@ const ExpedientesList: React.FC = () => {
                     <Link 
                       to={`/expedientes/${encodeURIComponent(expediente.expediente.iue)}`}
                       style={{
-                        color: '#1976d2',
+                        color: '#1E40AF',
                         textDecoration: 'none',
                         fontWeight: 'bold',
                         fontSize: '0.9rem'
@@ -479,8 +479,8 @@ const ExpedientesList: React.FC = () => {
                   </td>
                   <td style={{ padding: '1rem', textAlign: 'center', fontSize: '0.875rem' }}>
                     <span style={{
-                      backgroundColor: '#e3f2fd',
-                      color: '#1976d2',
+                      backgroundColor: '#dbeafe',
+                      color: '#1E40AF',
                       padding: '0.25rem 0.5rem',
                       borderRadius: '4px',
                       fontSize: '0.875rem',
@@ -491,8 +491,8 @@ const ExpedientesList: React.FC = () => {
                   </td>
                   <td style={{ padding: '1rem', textAlign: 'center', fontSize: '0.875rem' }}>
                     <span style={{
-                      backgroundColor: '#f3e5f5',
-                      color: '#7b1fa2',
+                      backgroundColor: '#fef2f2',
+                      color: '#B91C1C',
                       padding: '0.25rem 0.5rem',
                       borderRadius: '4px',
                       fontSize: '0.875rem',
@@ -511,7 +511,7 @@ const ExpedientesList: React.FC = () => {
                     <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center', flexWrap: 'wrap' }}>
                       {expediente.hasNewDecretos && (
                         <span style={{
-                          backgroundColor: '#4caf50',
+                          backgroundColor: '#65A30D',
                           color: 'white',
                           padding: '0.25rem 0.5rem',
                           borderRadius: '4px',
@@ -523,7 +523,7 @@ const ExpedientesList: React.FC = () => {
                       )}
                       {expediente.hasNewMovements && !expediente.hasNewDecretos && (
                         <span style={{
-                          backgroundColor: '#ff9800',
+                          backgroundColor: '#B91C1C',
                           color: 'white',
                           padding: '0.25rem 0.5rem',
                           borderRadius: '4px',

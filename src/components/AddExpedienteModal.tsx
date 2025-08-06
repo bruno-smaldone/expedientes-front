@@ -130,7 +130,7 @@ const AddExpedienteModal: React.FC<AddExpedienteModalProps> = ({ isOpen, onClose
       case 'pending':
         return '#fff3e0';
       case 'success':
-        return '#e8f5e8';
+        return '#ecfccb';
       case 'error':
         return '#ffebee';
     }
@@ -141,7 +141,7 @@ const AddExpedienteModal: React.FC<AddExpedienteModalProps> = ({ isOpen, onClose
       case 'pending':
         return '#f57c00';
       case 'success':
-        return '#2e7d32';
+        return '#65A30D';
       case 'error':
         return '#c62828';
     }
@@ -190,7 +190,7 @@ const AddExpedienteModal: React.FC<AddExpedienteModalProps> = ({ isOpen, onClose
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
               <div>
-                <h2 style={{ color: '#1976d2', marginBottom: '0.5rem', margin: 0 }}>
+                <h2 style={{ color: '#1E40AF', marginBottom: '0.5rem', margin: 0 }}>
                   Agregar expedientes
                 </h2>
                 <p style={{ color: '#666', margin: 0, fontSize: '0.9rem' }}>
@@ -256,7 +256,7 @@ const AddExpedienteModal: React.FC<AddExpedienteModalProps> = ({ isOpen, onClose
                   disabled={isProcessing || !inputText.trim()}
                   style={{
                     padding: '0.75rem 1.5rem',
-                    backgroundColor: isProcessing || !inputText.trim() ? '#ccc' : '#1976d2',
+                    backgroundColor: isProcessing || !inputText.trim() ? '#ccc' : '#1E40AF',
                     color: 'white',
                     border: 'none',
                     borderRadius: '4px',

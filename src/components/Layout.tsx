@@ -16,7 +16,7 @@ const Layout: React.FC = () => {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <header style={{ 
-        backgroundColor: '#1976d2', 
+        backgroundColor: '#1E40AF', 
         color: 'white', 
         padding: '1rem 2rem',
         display: 'flex',
@@ -40,7 +40,7 @@ const Layout: React.FC = () => {
           <button 
             onClick={() => setIsAddModalOpen(true)}
             style={{
-              background: '#4caf50',
+              background: '#65A30D',
               border: 'none',
               color: 'white',
               padding: '0.5rem 1rem',
@@ -50,8 +50,8 @@ const Layout: React.FC = () => {
               fontSize: '0.875rem',
               transition: 'background-color 0.2s ease'
             }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#45a049'}
-            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#4caf50'}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#54890B'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#65A30D'}
           >
             + Agregar Expedientes
           </button>
@@ -70,7 +70,11 @@ const Layout: React.FC = () => {
           </button>
         </nav>
       </header>
-      <main style={{ flex: 1, padding: '2rem' }}>
+      <main style={{ 
+        flex: 1, 
+        padding: '2rem',
+        backgroundColor: '#F7F3E9'
+      }}>
         <Outlet />
       </main>
       
