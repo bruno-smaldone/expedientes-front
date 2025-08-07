@@ -98,6 +98,14 @@ const AddExpedientes: React.FC = () => {
             displayMessage = 'Error del servidor - Inténtalo de nuevo';
             canRetry = true;
           }
+          else if (errorMessage === 'Failed to fetch' || errorMessage.includes('fetch')) {
+            displayMessage = 'Error de conexión con el servidor - Inténtalo de nuevo';
+            canRetry = true;
+          }
+          else if (errorMessage.includes('network') || errorMessage.includes('Network')) {
+            displayMessage = 'Error de red - Inténtalo de nuevo';
+            canRetry = true;
+          }
 
           setResults(prev => prev.map((result, index) => 
             index === i ? {
@@ -113,12 +121,23 @@ const AddExpedientes: React.FC = () => {
         if (i < iues.length - 1) {
           await new Promise(resolve => setTimeout(resolve, 500));
         }
-      } catch (_error) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      } catch (error) { // eslint-disable-line @typescript-eslint/no-unused-vars
+        let errorMessage = 'Error del servidor - Inténtalo de nuevo';
+        
+        // Handle specific fetch errors
+        if (error instanceof Error) {
+          if (error.message === 'Failed to fetch' || error.message.includes('fetch')) {
+            errorMessage = 'Error de conexión con el servidor - Inténtalo de nuevo';
+          } else if (error.message.includes('network') || error.message.includes('Network')) {
+            errorMessage = 'Error de red - Inténtalo de nuevo';
+          }
+        }
+        
         setResults(prev => prev.map((result, index) => 
           index === i ? {
             ...result,
             status: 'error',
-            message: 'Error de conexión - Inténtalo de nuevo',
+            message: errorMessage,
             canRetry: true
           } : result
         ));
@@ -191,6 +210,14 @@ const AddExpedientes: React.FC = () => {
           displayMessage = 'Error del servidor - Inténtalo de nuevo';
           canRetry = true;
         }
+        else if (errorMessage === 'Failed to fetch' || errorMessage.includes('fetch')) {
+          displayMessage = 'Error de conexión con el servidor - Inténtalo de nuevo';
+          canRetry = true;
+        }
+        else if (errorMessage.includes('network') || errorMessage.includes('Network')) {
+          displayMessage = 'Error de red - Inténtalo de nuevo';
+          canRetry = true;
+        }
 
         setResults(prev => prev.map((r, i) => 
           i === index ? {
@@ -201,12 +228,23 @@ const AddExpedientes: React.FC = () => {
           } : r
         ));
       }
-    } catch (_error) { // eslint-disable-line @typescript-eslint/no-unused-vars
+    } catch (error) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      let errorMessage = 'Error del servidor - Inténtalo de nuevo';
+      
+      // Handle specific fetch errors
+      if (error instanceof Error) {
+        if (error.message === 'Failed to fetch' || error.message.includes('fetch')) {
+          errorMessage = 'Error de conexión con el servidor - Inténtalo de nuevo';
+        } else if (error.message.includes('network') || error.message.includes('Network')) {
+          errorMessage = 'Error de red - Inténtalo de nuevo';
+        }
+      }
+      
       setResults(prev => prev.map((r, i) => 
         i === index ? {
           ...r,
           status: 'error' as const,
-          message: 'Error de conexión - Inténtalo de nuevo',
+          message: errorMessage,
           canRetry: true
         } : r
       ));

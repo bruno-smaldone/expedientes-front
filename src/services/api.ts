@@ -62,6 +62,17 @@ class ApiService {
       return data;
     } catch (error) {
       console.error('API request failed:', error);
+      
+      // Re-throw network/fetch errors so they can be handled properly
+      if (error instanceof Error) {
+        if (error.message === 'Failed to fetch' || 
+            error.message.includes('fetch') || 
+            error.message.includes('network') ||
+            error.message.includes('Network')) {
+          throw error;
+        }
+      }
+      
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error',
