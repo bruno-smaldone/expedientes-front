@@ -48,15 +48,17 @@ class ApiService {
         ...options,
       });
 
+      const data = await response.json();
+      
       if (!response.ok) {
         if (response.status === 401) {
           this.clearToken();
           throw new Error('Authentication required');
         }
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        // Return the parsed error response instead of throwing
+        return data;
       }
 
-      const data = await response.json();
       return data;
     } catch (error) {
       console.error('API request failed:', error);

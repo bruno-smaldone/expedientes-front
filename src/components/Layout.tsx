@@ -1,12 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import AddExpedienteModal from './AddExpedienteModal';
 
 const Layout: React.FC = () => {
   const { logout } = useAuth();
   const navigate = useNavigate();
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -38,7 +36,7 @@ const Layout: React.FC = () => {
             Mis Expedientes
           </Link>
           <button 
-            onClick={() => setIsAddModalOpen(true)}
+            onClick={() => navigate('/expedientes/agregar')}
             style={{
               background: '#65A30D',
               border: 'none',
@@ -77,15 +75,6 @@ const Layout: React.FC = () => {
       }}>
         <Outlet />
       </main>
-      
-      <AddExpedienteModal 
-        isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
-        onSuccess={() => {
-          // This could be expanded to refresh specific page data
-          window.location.reload();
-        }}
-      />
     </div>
   );
 };

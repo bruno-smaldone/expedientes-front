@@ -6,6 +6,7 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import ExpedientesList from './pages/ExpedientesList';
 import ExpedienteDetail from './pages/ExpedienteDetail';
+import AddExpedientes from './pages/AddExpedientes';
 import './App.css';
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
           }>
             <Route index element={<Dashboard />} />
             <Route path="expedientes" element={<ExpedientesList />} />
+            <Route path="expedientes/agregar" element={<AddExpedientes />} />
             <Route path="expedientes/:iue" element={<ExpedienteDetail />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />

@@ -59,13 +59,30 @@ const Dashboard: React.FC = () => {
   const formatRefreshTime = (timestamp: string | null) => {
     if (!timestamp) return 'No disponible';
     const date = new Date(timestamp);
-    return date.toLocaleDateString('es-UY', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+    const today = new Date();
+    
+    // Check if the date is today
+    const isToday = date.toDateString() === today.toDateString();
+    
+    if (isToday) {
+      // Show "Today, " + 24-hour time
+      const timeString = date.toLocaleTimeString('es-UY', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      });
+      return `Hoy, ${timeString}`;
+    } else {
+      // Show full date and 24-hour time
+      return date.toLocaleDateString('es-UY', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      });
+    }
   };
 
   if (loading) {
@@ -203,8 +220,8 @@ const Dashboard: React.FC = () => {
           boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
           border: '1px solid #e0e0e0'
         }}>
-          <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#65A30D', marginBottom: '0.5rem' }}>
-            {formatRefreshTime(dashboardData.lastRefreshTimestamp)}
+          <div style={{ fontSize: '3rem', fontWeight: 'bold', color: '#65A30D', marginBottom: '0.5rem' }}>
+            {formatRefreshTime(dashboardData.lastAutomaticSyncDate)}
           </div>
           <div style={{ color: '#333', fontWeight: '500' }}>
             Última fecha de actualización
