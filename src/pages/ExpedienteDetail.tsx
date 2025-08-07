@@ -94,7 +94,7 @@ const ExpedienteDetail: React.FC = () => {
         alert(response.error || 'Error al dejar de seguir expediente');
         setUntrackModal({isOpen: false, iue: ''});
       }
-    } catch (error) {
+    } catch (_error) { // eslint-disable-line @typescript-eslint/no-unused-vars
       alert('Error de conexión al dejar de seguir expediente');
       setUntrackModal({isOpen: false, iue: ''});
     } finally {

@@ -125,7 +125,7 @@ const AddExpedientes: React.FC = () => {
         if (i < iues.length - 1) {
           await new Promise(resolve => setTimeout(resolve, 500));
         }
-      } catch (error) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      } catch (error) {
         let errorMessage = 'Error del servidor - Inténtalo de nuevo';
         
         // Handle specific fetch errors
@@ -236,7 +236,7 @@ const AddExpedientes: React.FC = () => {
           } : r
         ));
       }
-    } catch (error) { // eslint-disable-line @typescript-eslint/no-unused-vars
+    } catch (error) {
       let errorMessage = 'Error del servidor - Inténtalo de nuevo';
       
       // Handle specific fetch errors

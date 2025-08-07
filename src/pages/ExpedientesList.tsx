@@ -93,7 +93,7 @@ const ExpedientesList: React.FC = () => {
         // Handle error - you might want to show a toast/notification here
         alert(response.error || 'Error al dejar de seguir expediente');
       }
-    } catch (error) {
+    } catch (_error) { // eslint-disable-line @typescript-eslint/no-unused-vars
       alert('Error de conexión al dejar de seguir expediente');
     } finally {
       setIsUntracking(false);
