@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import apiService from '../services/api';
 import type { ExpedienteDetailResponse } from '../types/api';
+import UntrackConfirmModal from '../components/UntrackConfirmModal';
 
 const ExpedienteDetail: React.FC = () => {
   const { iue } = useParams<{ iue: string }>();
+  const navigate = useNavigate();
   const [expedienteDetail, setExpedienteDetail] = useState<ExpedienteDetailResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [untrackModal, setUntrackModal] = useState<{isOpen: boolean, iue: string}>({isOpen: false, iue: ''});
+  const [isUntracking, setIsUntracking] = useState(false);
 
   useEffect(() => {
     const fetchExpedienteDetail = async () => {
@@ -67,6 +71,41 @@ const ExpedienteDetail: React.FC = () => {
       hour: '2-digit',
       minute: '2-digit'
     });
+  };
+
+  const handleUntrackClick = () => {
+    if (iue) {
+      setUntrackModal({isOpen: true, iue});
+    }
+  };
+
+  const handleUntrackConfirm = async () => {
+    if (!untrackModal.iue) return;
+    
+    setIsUntracking(true);
+    try {
+      const response = await apiService.untrackExpediente(untrackModal.iue);
+      
+      if (response.success) {
+        // Navigate back to expedientes list since we untracked this one
+        navigate('/expedientes');
+      } else {
+        // Handle error - you might want to show a toast/notification here
+        alert(response.error || 'Error al dejar de seguir expediente');
+        setUntrackModal({isOpen: false, iue: ''});
+      }
+    } catch (error) {
+      alert('Error de conexión al dejar de seguir expediente');
+      setUntrackModal({isOpen: false, iue: ''});
+    } finally {
+      setIsUntracking(false);
+    }
+  };
+
+  const handleUntrackCancel = () => {
+    if (!isUntracking) {
+      setUntrackModal({isOpen: false, iue: ''});
+    }
   };
 
   // Helper function to extract decreto text from various formats
@@ -183,7 +222,7 @@ const ExpedienteDetail: React.FC = () => {
               {expediente.caratula.replace(/<br\s*\/?>/gi, ' - ')}
             </h2>
           </div>
-          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'flex-start' }}>
             {hasNewDecretos && (
               <span style={{
                 backgroundColor: '#65A30D',
@@ -208,6 +247,31 @@ const ExpedienteDetail: React.FC = () => {
                 NUEVOS MOVIMIENTOS
               </span>
             )}
+            <button
+              onClick={handleUntrackClick}
+              style={{
+                backgroundColor: 'transparent',
+                border: '1px solid #dc2626',
+                color: '#dc2626',
+                padding: '0.375rem 0.75rem',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontSize: '0.75rem',
+                fontWeight: '500',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#dc2626';
+                e.currentTarget.style.color = 'white';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
+                e.currentTarget.style.color = '#dc2626';
+              }}
+              title="Dejar de seguir este expediente"
+            >
+              🗑️ Dejar de seguir
+            </button>
           </div>
         </div>
 
@@ -434,6 +498,15 @@ const ExpedienteDetail: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Untrack Confirmation Modal */}
+      <UntrackConfirmModal
+        isOpen={untrackModal.isOpen}
+        expedienteIue={untrackModal.iue}
+        onConfirm={handleUntrackConfirm}
+        onCancel={handleUntrackCancel}
+        isLoading={isUntracking}
+      />
     </div>
   );
 };

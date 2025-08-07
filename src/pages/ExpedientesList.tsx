@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import apiService from '../services/api';
 import type { ExpedienteTracking } from '../types/api';
+import UntrackConfirmModal from '../components/UntrackConfirmModal';
 
 type ViewMode = 'normal' | 'decretos-first' | 'movements-first';
 
@@ -18,6 +19,8 @@ const ExpedientesList: React.FC = () => {
     return ['normal', 'decretos-first', 'movements-first'].includes(view) ? view : 'normal';
   });
   const [tooltip, setTooltip] = useState<{text: string, x: number, y: number} | null>(null);
+  const [untrackModal, setUntrackModal] = useState<{isOpen: boolean, iue: string}>({isOpen: false, iue: ''});
+  const [isUntracking, setIsUntracking] = useState(false);
 
   useEffect(() => {
     const fetchExpedientes = async () => {
@@ -69,6 +72,38 @@ const ExpedientesList: React.FC = () => {
       .toLowerCase()
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, ''); // Remove diacritics/accents
+  };
+
+  const handleUntrackClick = (iue: string) => {
+    setUntrackModal({isOpen: true, iue});
+  };
+
+  const handleUntrackConfirm = async () => {
+    if (!untrackModal.iue) return;
+    
+    setIsUntracking(true);
+    try {
+      const response = await apiService.untrackExpediente(untrackModal.iue);
+      
+      if (response.success) {
+        // Remove the expediente from the local state
+        setExpedientes(prev => prev.filter(exp => exp.expediente.iue !== untrackModal.iue));
+        setUntrackModal({isOpen: false, iue: ''});
+      } else {
+        // Handle error - you might want to show a toast/notification here
+        alert(response.error || 'Error al dejar de seguir expediente');
+      }
+    } catch (error) {
+      alert('Error de conexión al dejar de seguir expediente');
+    } finally {
+      setIsUntracking(false);
+    }
+  };
+
+  const handleUntrackCancel = () => {
+    if (!isUntracking) {
+      setUntrackModal({isOpen: false, iue: ''});
+    }
   };
 
   // Filter expedientes based on search term
@@ -405,6 +440,13 @@ const ExpedientesList: React.FC = () => {
                 }}>
                   Actividad
                 </th>
+                <th style={{
+                  padding: '1rem',
+                  textAlign: 'center',
+                  borderBottom: '1px solid #e0e0e0'
+                }}>
+                  Acciones
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -413,7 +455,7 @@ const ExpedientesList: React.FC = () => {
                   {group.title && (
                     <tr>
                       <td 
-                        colSpan={7} 
+                        colSpan={8} 
                         style={{
                           backgroundColor: '#f0f4f8',
                           padding: '0.75rem 1rem',
@@ -536,6 +578,33 @@ const ExpedientesList: React.FC = () => {
                       )}
                     </div>
                   </td>
+                  <td style={{ padding: '1rem', textAlign: 'center' }}>
+                    <button
+                      onClick={() => handleUntrackClick(expediente.expediente.iue)}
+                      style={{
+                        backgroundColor: 'transparent',
+                        border: '1px solid #dc2626',
+                        color: '#dc2626',
+                        padding: '0.375rem 0.75rem',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontSize: '0.75rem',
+                        fontWeight: '500',
+                        transition: 'all 0.2s ease'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = '#dc2626';
+                        e.currentTarget.style.color = 'white';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = 'transparent';
+                        e.currentTarget.style.color = '#dc2626';
+                      }}
+                      title="Dejar de seguir este expediente"
+                    >
+                      🗑️ Dejar de seguir
+                    </button>
+                  </td>
                 </tr>
                   ))}
                 </React.Fragment>
@@ -567,6 +636,15 @@ const ExpedientesList: React.FC = () => {
           {tooltip.text}
         </div>
       )}
+
+      {/* Untrack Confirmation Modal */}
+      <UntrackConfirmModal
+        isOpen={untrackModal.isOpen}
+        expedienteIue={untrackModal.iue}
+        onConfirm={handleUntrackConfirm}
+        onCancel={handleUntrackCancel}
+        isLoading={isUntracking}
+      />
     </div>
   );
 };

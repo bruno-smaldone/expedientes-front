@@ -203,6 +203,13 @@ class ApiService {
       method: 'PUT',
     });
   }
+
+  async untrackExpediente(iue: string): Promise<ApiResponse<{ message: string }>> {
+    return this.makeRequest<{ message: string }>('/api/expedientes/untrack', {
+      method: 'POST',
+      body: JSON.stringify({ iue }),
+    });
+  }
 }
 
 export const apiService = new ApiService();
