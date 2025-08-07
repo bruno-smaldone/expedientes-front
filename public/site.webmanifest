@@ -1,0 +1,23 @@
+{
+  "name": "Cicero - Monitor de Expedientes",
+  "short_name": "Cicero",
+  "description": "Sistema de monitoreo de expedientes jurídicos",
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#1E40AF",
+  "background_color": "#F7F3E9",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "start_url": "/",
+  "scope": "/"
+}

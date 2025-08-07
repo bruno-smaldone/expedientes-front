@@ -59,7 +59,7 @@ export interface NotificationPreferences {
 
 export interface TrackExpedienteRequest {
   iue: string;
-  notificationPreferences: NotificationPreferences;
+  notificationPreferences?: NotificationPreferences;
 }
 
 export interface TrackExpedienteResponse {
@@ -103,6 +103,6 @@ export interface DashboardSummaryResponse {
   totalExpedientes: number;
   expedientesWithNewMovements: number;
   expedientesWithNewDecretos: number;
-  lastRefreshTimestamp: string | null;
+  lastAutomaticSyncDate: string | null;
   newDecretos: RecentDecreto[];
 }

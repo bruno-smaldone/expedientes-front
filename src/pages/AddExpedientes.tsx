@@ -90,8 +90,12 @@ const AddExpedientes: React.FC = () => {
             displayMessage = 'Error de autenticación - Inténtalo de nuevo';
             canRetry = true;
           }
-          else if (errorMessage === 'Input validation error') {
-            displayMessage = 'Error de validación - Verifica el formato del IUE';
+          else if (errorMessage === 'IUE is required') {
+            displayMessage = 'IUE requerido - Verifica que ingresaste un IUE válido';
+            canRetry = true;
+          }
+          else if (errorMessage === 'Invalid IUE format') {
+            displayMessage = 'Formato de IUE inválido - Verifica el formato del IUE';
             canRetry = true;
           }
           else if (errorMessage === 'Application error') {
@@ -202,8 +206,12 @@ const AddExpedientes: React.FC = () => {
           displayMessage = 'Error de autenticación - Inténtalo de nuevo';
           canRetry = true;
         }
-        else if (errorMessage === 'Input validation error') {
-          displayMessage = 'Error de validación - Verifica el formato del IUE';
+        else if (errorMessage === 'IUE is required') {
+          displayMessage = 'IUE requerido - Verifica que ingresaste un IUE válido';
+          canRetry = true;
+        }
+        else if (errorMessage === 'Invalid IUE format') {
+          displayMessage = 'Formato de IUE inválido - Verifica el formato del IUE';
           canRetry = true;
         }
         else if (errorMessage === 'Application error') {
