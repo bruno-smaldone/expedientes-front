@@ -1,0 +1,17 @@
+<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+  <!-- Classical marble column/pillar design -->
+  <rect x="12" y="8" width="8" height="16" fill="#F5F5F5" stroke="#E5E7EB" stroke-width="0.5" rx="1"/>
+  
+  <!-- Column capital (top decoration) - darker marble -->
+  <rect x="10" y="8" width="12" height="2" fill="#D1D5DB" rx="1"/>
+  
+  <!-- Column base - darker marble -->
+  <rect x="10" y="22" width="12" height="2" fill="#D1D5DB" rx="1"/>
+  
+  <!-- Stylized "C" for Cicero in the center, facing right and moved more left -->
+  <path d="M16.5 12 C14 12, 12.5 13.5, 12.5 16 C12.5 18.5, 14 20, 16.5 20 L18.5 20 L18.5 18 L16.5 18 C15.1 18, 14.5 17.4, 14.5 16 C14.5 14.6, 15.1 14, 16.5 14 L18.5 14 L18.5 12 Z" fill="#B91C1C"/>
+  
+  <!-- Small decorative elements (scrollwork) -->
+  <circle cx="8" cy="12" r="1.5" fill="#65A30D" opacity="0.6"/>
+  <circle cx="24" cy="20" r="1.5" fill="#65A30D" opacity="0.6"/>
+</svg>
