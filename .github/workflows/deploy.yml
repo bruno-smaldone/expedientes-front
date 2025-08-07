@@ -26,6 +26,8 @@ jobs:
       run: npm run lint
     
     - name: Build application
+      env:
+        VITE_API_KEY: ${{ secrets.API_KEY }}
       run: npm run build
     
     - name: Configure AWS credentials
