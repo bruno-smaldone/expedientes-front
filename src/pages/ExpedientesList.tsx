@@ -63,13 +63,24 @@ const ExpedientesList: React.FC = () => {
     setSearchParams(newSearchParams);
   };
 
+  // Helper function to normalize text for search (remove accents and convert to lowercase)
+  const normalizeText = (text: string) => {
+    return text
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, ''); // Remove diacritics/accents
+  };
+
   // Filter expedientes based on search term
   const filteredExpedientes = expedientes.filter(expediente => {
     if (!searchTerm.trim()) return true;
     
-    const searchLower = searchTerm.toLowerCase();
-    const iueMatches = expediente.expediente.iue.toLowerCase().includes(searchLower);
-    const caratulaMatches = expediente.expediente.caratula.toLowerCase().includes(searchLower);
+    const searchNormalized = normalizeText(searchTerm);
+    const iueNormalized = normalizeText(expediente.expediente.iue);
+    const caratulaNormalized = normalizeText(expediente.expediente.caratula);
+    
+    const iueMatches = iueNormalized.includes(searchNormalized);
+    const caratulaMatches = caratulaNormalized.includes(searchNormalized);
     
     return iueMatches || caratulaMatches;
   });
